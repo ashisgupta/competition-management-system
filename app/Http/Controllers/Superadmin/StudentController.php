@@ -99,12 +99,20 @@ class StudentController extends Controller
         'status' => 'required'
         ]);
     $requestData = $request->all();
-    $requestData["role_id"] = 4;
     if(!empty($requestData["password"])){
         $requestData["password"] = bcrypt($requestData['password']);
     }
     $user = User::findOrFail($id);//dd($requestData);
     $user->update(array_filter($requestData));
+    if(isset($user->role_id)){
+        if(in_array($user->role_id, [2,3])){
+            Session::flash('flash_message', 'Judge/Company Data Updated!');
+        } else {
+            Session::flash('flash_message', 'Student Updated!');
+        }
+    } else {
+        Session::flash('flash_message', 'User data Updated!');
+    }
     Session::flash('flash_message', 'Student Updated!');
     return redirect('superadmin/student');
     }
